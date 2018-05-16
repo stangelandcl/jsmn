@@ -39,3 +39,10 @@ clean:
 
 .PHONY: all clean test
 
+
+install:
+	mkdir -p $(PREFIX)/include
+	cp jsmn.h $(PREFIX)/include/jsmn.h
+	mkdir -p $(PREFIX)/lib
+	cp libjsmn.a $(PREFIX)/lib/libjsmn.a
+
