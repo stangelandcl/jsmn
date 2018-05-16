@@ -328,7 +328,7 @@ const char* jsmn_strerror(int error_code)
 jsmntok_t* jsmn_lookup(
     const char* json_text,
     jsmntok_t* token,
-    char* key_name)
+    const char* key_name)
 {
     size_t i, sz = strlen(key_name);
     jsmntok_t* t;
@@ -345,7 +345,7 @@ jsmntok_t* jsmn_lookup(
 jsmntok_t* jsmn_lookup_type(
     const char* json_text,
     jsmntok_t* token,
-    char* key_name,
+    const char* key_name,
     jsmntype_t value_type)
 {
     size_t i, sz = strlen(key_name);
@@ -377,4 +377,15 @@ char* jsmn_string(const char* json_text, jsmntok_t* token)
         c[sz] = '\0';
     }
     return c;
+}
+
+char* jsmn_lookup_string_copy(
+    const char* json_text,
+    jsmntok_t* token,
+    const char* key_name)
+{
+    if(!(token = jsmn_lookup_type(json_text, token, key_name, JSMN_STRING)))
+        return NULL;
+
+    return jsmn_string(json_text, token);
 }

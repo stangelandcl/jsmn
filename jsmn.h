@@ -81,15 +81,23 @@ int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
 jsmntok_t* jsmn_lookup(
     const char* json_text,
     jsmntok_t* token,
-    char* key_name);
+    const char* key_name);
 
 /* assume token is an JSMN_OBJECT. try to find a key with value of type value_type.
    return value if found. else return NULL */
 jsmntok_t* jsmn_lookup_type(
     const char* json_text,
     jsmntok_t* token,
-    char* key_name,
+    const char* key_name,
     jsmntype_t value_type);
+
+/* assume token is a JSMN_OBJECT. lookup key. if found and value is a string,
+   malloc return space and copy value text. be sure to NULL check and free
+   the result */
+char* jsmn_lookup_string_copy(
+    const char* json_text,
+    jsmntok_t* token,
+    const char* key_name);
 
 /* assume token is a JSMN_ARRAY. return the child at i if i is in bounds.
    else return NULL */
@@ -97,6 +105,8 @@ jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i);
 /* copy token value to null terminated string allocated with malloc.
    be sure to free the result and check for NULL in case allocation failed */
 char* jsmn_string(const char* json_text, jsmntok_t* token);
+
+
 
 #ifdef __cplusplus
 }
