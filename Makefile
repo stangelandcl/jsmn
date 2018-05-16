@@ -2,7 +2,7 @@
 -include config.mk
 
 CFLAGS?=-O3
-CFLAGS+=-fPIC
+CFLAGS+=-fPIC -Wall
 
 all: libjsmn.a 
 

@@ -331,6 +331,7 @@ jsmntok_t* jsmn_array_next(jsmntok_t* token)
     jsmntok_t *t, *c;
     size_t i;
 
+    t = token;
     if(t->type == JSMN_OBJECT)
     {
         c = t;
@@ -353,8 +354,11 @@ jsmntok_t* jsmn_array_next(jsmntok_t* token)
 jsmntok_t* jsmn_obj_next(jsmntok_t* token)
 {
     jsmntok_t *t, *c;
-    size_t i,j;
+    size_t j;
 
+#if 0
+    fprintf(stderr, "obj next type=%d\n", token->type);
+#endif
     t = token + 1; /* assume token is key so token + 1 is value */
     if(t->type == JSMN_OBJECT)
     {
@@ -364,7 +368,16 @@ jsmntok_t* jsmn_obj_next(jsmntok_t* token)
             t = jsmn_obj_next(t);
     }
     else if(t->type == JSMN_ARRAY)
-        t = jsmn_array_next(t);
+    {
+        c = t;
+        ++t;
+#if 0
+        fprintf(stderr, "array size=%d\n", c->size);
+        fprintf(stderr, "t=%d\n", t->type);
+#endif
+        for(j=0;j<c->size;j++)
+            t = jsmn_array_next(t);
+    }
     else
         ++t;
     return t;
@@ -397,11 +410,11 @@ jsmntok_t* jsmn_lookup_type(
     {
 #if 0
         fprintf(stderr, "searching i=%d sz=%d token=%.*s",
-                i, token->size, t->end - t->start, json_text + t->start);
+                (int)i, token->size, t->end - t->start, json_text + t->start);
         fprintf(stderr, "type=%d sz=%d s1=%d s2=%d memcmp=%d\n",
                 t->type == value_type,
                 sz == t->end - t->start,
-                sz, t->end - t->start,
+                (int)sz, t->end - t->start,
                 !memcmp(key_name, json_text + t->start, sz));
 #endif
         val = t+1;
@@ -430,7 +443,7 @@ char* jsmn_string(const char* json_text, jsmntok_t* token)
 {
     size_t sz = token->end - token->start;
     char* c;
-    if(c = malloc(sz + 1))
+    if((c = malloc(sz + 1)))
     {
         memcpy(c, json_text + token->start, sz);
         c[sz] = '\0';
