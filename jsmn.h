@@ -94,7 +94,9 @@ jsmntok_t* jsmn_lookup_type(
 /* assume token is a JSMN_ARRAY. return the child at i if i is in bounds.
    else return NULL */
 jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i);
-
+/* copy token value to null terminated string allocated with malloc.
+   be sure to free the result and check for NULL in case allocation failed */
+char* jsmn_string(const char* json_text, jsmntok_t* token);
 
 #ifdef __cplusplus
 }

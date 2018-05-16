@@ -1,4 +1,5 @@
 #include "jsmn.h"
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -364,4 +365,16 @@ jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i)
     if(token->size > i)
         return token + i;
     return NULL;
+}
+
+char* jsmn_string(const char* json_text, jsmntok_t* token)
+{
+    size_t sz = token->end - token->start;
+    char* c;
+    if(c = malloc(sz + 1))
+    {
+        memcpy(c, json_text + token->start, sz);
+        c[sz] = '\0';
+    }
+    return c;
 }

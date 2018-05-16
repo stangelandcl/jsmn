@@ -1,6 +1,8 @@
 # You can put your build options here
 -include config.mk
 
+CFLAGS?=-O3
+
 all: libjsmn.a 
 
 libjsmn.a: jsmn.o
