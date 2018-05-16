@@ -83,6 +83,10 @@ jsmntok_t* jsmn_lookup(
     jsmntok_t* token,
     const char* key_name);
 
+/* skip this token's children and move to next token in
+   current object or array. */
+jsmntok_t* jsmn_next(jsmntok_t* token);
+
 /* assume token is an JSMN_OBJECT. try to find a key with value of type value_type.
    return value if found. else return NULL */
 jsmntok_t* jsmn_lookup_type(

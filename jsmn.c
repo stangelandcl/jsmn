@@ -342,6 +342,22 @@ jsmntok_t* jsmn_lookup(
     return NULL;
 }
 
+jsmntok_t* jsmn_next(jsmntok_t* token)
+{
+    jsmntok_t* t;
+    size_t i;
+
+    t = token + 1;
+    for(i=0;i<token->size;i++)
+    {
+        if(t->type == JSMN_OBJECT || t->type == JSMN_ARRAY)
+            t = jsmn_next(t);
+        else
+            ++t;
+    }
+    return t;
+}
+
 jsmntok_t* jsmn_lookup_type(
     const char* json_text,
     jsmntok_t* token,
