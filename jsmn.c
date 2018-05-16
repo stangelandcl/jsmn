@@ -1,4 +1,5 @@
 #include "jsmn.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -325,37 +326,63 @@ const char* jsmn_strerror(int error_code)
     }
 }
 
+jsmntok_t* jsmn_array_next(jsmntok_t* token)
+{
+    jsmntok_t *t, *c;
+    size_t i;
+
+    if(t->type == JSMN_OBJECT)
+    {
+        c = t;
+        ++t; /* move to first key */
+        for(i=0;i<c->size;i++)
+            t = jsmn_obj_next(t);
+    }
+    else if(t->type == JSMN_ARRAY)
+    {
+        c = t;
+        ++t;
+        for(i=0;i<c->size;i++)
+            t = jsmn_array_next(t);
+    }
+    else
+        ++t;
+    return t;
+}
+
+jsmntok_t* jsmn_obj_next(jsmntok_t* token)
+{
+    jsmntok_t *t, *c;
+    size_t i,j;
+
+    t = token + 1; /* assume token is key so token + 1 is value */
+    if(t->type == JSMN_OBJECT)
+    {
+        c = t;
+        ++t; /* move to first key */
+        for(j=0;j<c->size;j++)
+            t = jsmn_obj_next(t);
+    }
+    else if(t->type == JSMN_ARRAY)
+        t = jsmn_array_next(t);
+    else
+        ++t;
+    return t;
+}
 jsmntok_t* jsmn_lookup(
     const char* json_text,
     jsmntok_t* token,
     const char* key_name)
 {
     size_t i, sz = strlen(key_name);
-    jsmntok_t* t;
-    for(i=0;i<token->size;i++)
+    jsmntok_t* t = token + 1; /* move to first key */
+    for(i=0;i<token->size;i++,t=jsmn_obj_next(t))
     {
-        t = token + i;
         if(sz == t->end - t->start &&
            !memcmp(key_name, json_text + t->start, sz))
-            return t;
+            return t + 1; /* value */
     }
     return NULL;
-}
-
-jsmntok_t* jsmn_next(jsmntok_t* token)
-{
-    jsmntok_t* t;
-    size_t i;
-
-    t = token + 1;
-    for(i=0;i<token->size;i++)
-    {
-        if(t->type == JSMN_OBJECT || t->type == JSMN_ARRAY)
-            t = jsmn_next(t);
-        else
-            ++t;
-    }
-    return t;
 }
 
 jsmntok_t* jsmn_lookup_type(
@@ -365,22 +392,38 @@ jsmntok_t* jsmn_lookup_type(
     jsmntype_t value_type)
 {
     size_t i, sz = strlen(key_name);
-    jsmntok_t* t;
-    for(i=0;i<token->size;i++)
+    jsmntok_t* t = token + 1 /* move to first key */, *val;
+    for(i=0;i<token->size;i++,t=jsmn_obj_next(t))
     {
-        t = token + i;
-        if(t->type == value_type && sz == t->end - t->start &&
+#if 0
+        fprintf(stderr, "searching i=%d sz=%d token=%.*s",
+                i, token->size, t->end - t->start, json_text + t->start);
+        fprintf(stderr, "type=%d sz=%d s1=%d s2=%d memcmp=%d\n",
+                t->type == value_type,
+                sz == t->end - t->start,
+                sz, t->end - t->start,
+                !memcmp(key_name, json_text + t->start, sz));
+#endif
+        val = t+1;
+        if(val->type == value_type && sz == t->end - t->start &&
            !memcmp(key_name, json_text + t->start, sz))
-            return t;
+            return val;
     }
     return NULL;
 }
 
 jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i)
 {
-    if(token->size > i)
-        return token + i;
-    return NULL;
+    size_t j;
+    jsmntok_t* t;
+
+    if(i >= token->size)
+        return NULL;
+
+    t = token + 1;
+    for(j=0;j<i;j++)
+        t = jsmn_array_next(t);
+    return t;
 }
 
 char* jsmn_string(const char* json_text, jsmntok_t* token)
@@ -404,4 +447,8 @@ char* jsmn_lookup_string_copy(
         return NULL;
 
     return jsmn_string(json_text, token);
+}
+void jsmn_print_text(const char* json_text, jsmntok_t* t)
+{
+    fprintf(stderr, "%.*s", t->end - t->start, json_text + t->start);
 }

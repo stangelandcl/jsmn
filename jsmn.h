@@ -83,9 +83,13 @@ jsmntok_t* jsmn_lookup(
     jsmntok_t* token,
     const char* key_name);
 
-/* skip this token's children and move to next token in
-   current object or array. */
-jsmntok_t* jsmn_next(jsmntok_t* token);
+/* move to next key in this object, skip current key and value + children */
+jsmntok_t* jsmn_obj_next(jsmntok_t* token);
+/* next element of array */
+jsmntok_t* jsmn_array_next(jsmntok_t* token);
+
+/* print token text */
+void jsmn_print_text(const char* json_text, jsmntok_t* token);
 
 /* assume token is an JSMN_OBJECT. try to find a key with value of type value_type.
    return value if found. else return NULL */
