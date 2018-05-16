@@ -1,4 +1,5 @@
 #include "jsmn.h"
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -464,4 +465,43 @@ char* jsmn_lookup_string_copy(
 void jsmn_print_text(const char* json_text, jsmntok_t* t)
 {
     fprintf(stderr, "%.*s", t->end - t->start, json_text + t->start);
+}
+jsmntok_t* jsmn_find(
+    const char* json, jsmntok_t* token,
+    const char* path_format, ...)
+{
+    jsmntok_t* t = token;
+    char *c, *key;
+    int idx;
+    va_list args;
+    va_start(args, path_format);
+
+    for(c=(char*)path_format;*c;++c)
+    {
+#if 0
+        fprintf(stderr, "path=%s t=%d c=%c\n", path_format, token->type, *c);
+#endif
+        if(*c == 'o')
+        {
+            key = va_arg(args, char*);
+#if 0
+            fprintf(stderr, "searching for %s in %d\n", key, t != NULL);
+#endif
+            if(t && t->type == JSMN_OBJECT)
+                t = jsmn_lookup(json, t, key);
+        }
+        else if(*c == 'a')
+        {
+            idx = va_arg(args, int);
+#if 0
+            fprintf(stderr, "searching for %d in %d\n", idx, t != NULL);
+#endif
+            if(t && t->type == JSMN_ARRAY)
+                t = jsmn_array_at(t, idx);
+        }
+        else t = NULL;
+    }
+
+    va_end(args);
+    return t;
 }

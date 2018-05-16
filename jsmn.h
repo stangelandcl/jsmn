@@ -114,6 +114,17 @@ jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i);
    be sure to free the result and check for NULL in case allocation failed */
 char* jsmn_string(const char* json_text, jsmntok_t* token);
 
+/* try to goto the value described by path_format and extra args
+   returns token on success, NULL on failure
+   path_format is a string containing a sequence of 'a's or 'o's
+   a for array, o for object. each character must have a matching paramater
+   for arrays this is an integer index. for objects this is the string field key.
+
+   example:
+   found = jsmn_find(text, tok, "oaoo", "data", 0, "weather", "cloud");
+ */
+jsmntok_t* jsmn_find(
+    const char* json, jsmntok_t* token, const char* path_format, ...);
 
 
 #ifdef __cplusplus
