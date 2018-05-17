@@ -327,6 +327,13 @@ const char* jsmn_strerror(int error_code)
     }
 }
 
+jsmntok_t* jsmn_array_first(jsmntok_t* token)
+{
+    if(token->type != JSMN_ARRAY)
+        return NULL;
+    return token + 1;
+}
+
 jsmntok_t* jsmn_array_next(jsmntok_t* token)
 {
     jsmntok_t *t, *c;
@@ -458,6 +465,14 @@ char* jsmn_lookup_string_copy(
 void jsmn_print_text(const char* json_text, jsmntok_t* t)
 {
     fprintf(stderr, "%.*s", t->end - t->start, json_text + t->start);
+}
+void jsmn_print_token(const char* json_text, jsmntok_t* t)
+{
+    fprintf(stderr, "start=%d end=%d text='%.*s'\n",
+            t->start,
+            t->end,
+            t->end - t->start,
+            json_text + t->start);
 }
 jsmntok_t* jsmn_findv(
     const char* json, jsmntok_t* token,
