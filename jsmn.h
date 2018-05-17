@@ -76,6 +76,8 @@ void jsmn_init(jsmn_parser *parser);
 int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
         jsmntok_t *tokens, unsigned int num_tokens);
 
+int jsmn_parse_text(const char *js, jsmntok_t *tokens, unsigned int num_tokens);
+
 /* assume token is an JSMN_OBJECT. return value for key_name if found
    else return NULL */
 jsmntok_t* jsmn_lookup(
@@ -126,6 +128,10 @@ char* jsmn_string(const char* json_text, jsmntok_t* token);
 jsmntok_t* jsmn_find(
     const char* json, jsmntok_t* token, const char* path_format, ...);
 
+/* find and copy string value */
+char* jsmn_find_string_copy(
+    const char* json, jsmntok_t* token,
+    const char* path_format, ...);
 
 #ifdef __cplusplus
 }

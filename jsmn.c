@@ -388,15 +388,7 @@ jsmntok_t* jsmn_lookup(
     jsmntok_t* token,
     const char* key_name)
 {
-    size_t i, sz = strlen(key_name);
-    jsmntok_t* t = token + 1; /* move to first key */
-    for(i=0;i<token->size;i++,t=jsmn_obj_next(t))
-    {
-        if(sz == t->end - t->start &&
-           !memcmp(key_name, json_text + t->start, sz))
-            return t + 1; /* value */
-    }
-    return NULL;
+    return jsmn_lookup(json_text, token, key_name, 0);
 }
 
 jsmntok_t* jsmn_lookup_type(
@@ -419,7 +411,8 @@ jsmntok_t* jsmn_lookup_type(
                 !memcmp(key_name, json_text + t->start, sz));
 #endif
         val = t+1;
-        if(val->type == value_type && sz == t->end - t->start &&
+        if((!value_type || val->type == value_type)
+           && sz == t->end - t->start &&
            !memcmp(key_name, json_text + t->start, sz))
             return val;
     }
@@ -466,15 +459,13 @@ void jsmn_print_text(const char* json_text, jsmntok_t* t)
 {
     fprintf(stderr, "%.*s", t->end - t->start, json_text + t->start);
 }
-jsmntok_t* jsmn_find(
+jsmntok_t* jsmn_findv(
     const char* json, jsmntok_t* token,
-    const char* path_format, ...)
+    const char* path_format, va_list args)
 {
     jsmntok_t* t = token;
     char *c, *key;
     int idx;
-    va_list args;
-    va_start(args, path_format);
 
     for(c=(char*)path_format;*c;++c)
     {
@@ -501,7 +492,37 @@ jsmntok_t* jsmn_find(
         }
         else t = NULL;
     }
-
+    return t;
+}
+jsmntok_t* jsmn_find(
+    const char* json, jsmntok_t* token,
+    const char* path_format, ...)
+{
+    va_list args;
+    jsmntok_t* t;
+    va_start(args, path_format);
+    t = jsmn_findv(json, token, path_format, args);
     va_end(args);
     return t;
+}
+
+int jsmn_parse_text(const char *js, jsmntok_t *tokens, unsigned int num_tokens)
+{
+    jsmn_parser p;
+    jsmn_init(&p);
+    return jsmn_parse(&p, js, strlen(js), tokens, num_tokens);
+}
+
+char* jsmn_find_string_copy(
+    const char* json, jsmntok_t* token,
+    const char* path_format, ...)
+{
+    va_list args;
+    jsmntok_t* t;
+    va_start(args, path_format);
+    t = jsmn_findv(json, token, path_format, args);
+    va_end(args);
+    if(t)
+        return jsmn_string(json, t);
+    return NULL;
 }
