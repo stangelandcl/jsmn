@@ -388,7 +388,7 @@ jsmntok_t* jsmn_lookup(
     jsmntok_t* token,
     const char* key_name)
 {
-    return jsmn_lookup(json_text, token, key_name, 0);
+    return jsmn_lookup_type(json_text, token, key_name, 0);
 }
 
 jsmntok_t* jsmn_lookup_type(
