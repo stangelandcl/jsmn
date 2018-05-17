@@ -337,7 +337,7 @@ jsmntok_t* jsmn_array_first(jsmntok_t* token)
 jsmntok_t* jsmn_array_next(jsmntok_t* token)
 {
     jsmntok_t *t, *c;
-    size_t i;
+    int i;
 
     t = token;
     if(t->type == JSMN_OBJECT)
@@ -362,7 +362,7 @@ jsmntok_t* jsmn_array_next(jsmntok_t* token)
 jsmntok_t* jsmn_obj_next(jsmntok_t* token)
 {
     jsmntok_t *t, *c;
-    size_t j;
+    int j;
 
 #if 0
     fprintf(stderr, "obj next type=%d\n", token->type);
@@ -404,7 +404,8 @@ jsmntok_t* jsmn_lookup_type(
     const char* key_name,
     jsmntype_t value_type)
 {
-    size_t i, sz = strlen(key_name);
+	int i;
+	size_t sz = strlen(key_name);
     jsmntok_t* t = token + 1 /* move to first key */, *val;
     for(i=0;i<token->size;i++,t=jsmn_obj_next(t))
     {
@@ -431,7 +432,7 @@ jsmntok_t* jsmn_array_at(jsmntok_t* token, size_t i)
     size_t j;
     jsmntok_t* t;
 
-    if(i >= token->size)
+    if((int)i >= token->size)
         return NULL;
 
     t = token + 1;

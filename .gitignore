@@ -3,3 +3,8 @@
 GPATH
 GRTAGS
 GTAGS
+.vs/
+bin/
+x64/
+x86/
+*.user
