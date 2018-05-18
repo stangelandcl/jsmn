@@ -143,6 +143,10 @@ char* jsmn_find_string_copy(
     const char* json, jsmntok_t* token,
     const char* path_format, ...);
 
+/* 0 on success, 1 on failure to parse */
+int jsmn_try_parse_double(const char* text, jsmntok_t* token, double* result);
+double jsmn_parse_double(const char* text, jsmntok_t* token);
+
 #ifdef __cplusplus
 }
 #endif

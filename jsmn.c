@@ -1,4 +1,6 @@
 #include "jsmn.h"
+#include <errno.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -448,8 +450,8 @@ jsmntok_t* jsmn_lookup_type(
     const char* key_name,
     jsmntype_t value_type)
 {
-	int i;
-	size_t sz = strlen(key_name);
+    int i;
+    size_t sz = strlen(key_name);
     jsmntok_t* t = token + 1 /* move to first key */, *val;
     for(i=0;i<token->size;i++,t=jsmn_obj_next(t))
     {
@@ -585,4 +587,32 @@ char* jsmn_find_string_copy(
     if(t)
         return jsmn_string(json, t);
     return NULL;
+}
+
+int jsmn_try_parse_double(const char* json, jsmntok_t* token, double* result)
+{
+    char *end, *start;
+    double d;
+
+    if(token->type != JSMN_STRING)
+        return 0;
+
+    start = (char*)json + token->start;
+    d = strtod(start, &end);
+    if(start == end)
+        return 0;
+
+    if((d == HUGE_VAL || d == -HUGE_VAL || d == 0) && errno == ERANGE)
+        return 0;
+
+    *result = d;
+    return 1;
+}
+
+double jsmn_parse_double(const char* text, jsmntok_t* token)
+{
+    double d;
+    if(!jsmn_try_parse_double(text, token, &d))
+        return 0;
+    return d;
 }
