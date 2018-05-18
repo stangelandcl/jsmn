@@ -621,3 +621,21 @@ double jsmn_parse_double(const char* text, jsmntok_t* token)
         return 0;
     return d;
 }
+
+int jsmn_lookup_double(
+    const char* json_text,
+    jsmntok_t* token,
+    const char* key_name,
+    double* result)
+{
+    jsmntok_t* t;
+
+    *result = 0;
+    if(!(t = jsmn_lookup_type(json_text, token, key_name, JSMN_PRIMITIVE)))
+        return JSMN_ERROR_NOFOUND;
+
+    if(!jsmn_try_parse_double(json_text, t, result))
+        return JSMN_ERROR_NOPARSE;
+
+    return 0;
+}

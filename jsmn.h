@@ -34,7 +34,13 @@ enum jsmnerr {
     /* Invalid character inside JSON string */
     JSMN_ERROR_INVAL = -2,
     /* The string is not a full JSON packet, more bytes expected */
-    JSMN_ERROR_PART = -3
+    JSMN_ERROR_PART = -3,
+    /* key not found */
+    JSMN_ERROR_NOFOUND = -4,
+    /* wrong type */
+    JSMN_ERROR_WRONG_TYPE = -5,
+    /* parsing failed */
+    JSMN_ERROR_NOPARSE = -6
 };
 
 const char* jsmn_strerror(int error_code);
@@ -120,6 +126,14 @@ char* jsmn_lookup_string_copy(
     const char* json_text,
     jsmntok_t* token,
     const char* key_name);
+
+/* returns 0 on success, or error if not found, wrong type or parsing failed.
+ result is set to zero on failure */
+int jsmn_lookup_double(
+    const char* json_text,
+    jsmntok_t* token,
+    const char* key_name,
+    double* result);
 
 /* assume token is a JSMN_ARRAY. return the child at i if i is in bounds.
    else return NULL */
