@@ -24,6 +24,7 @@ typedef enum {
     JSMN_OBJECT = 1,
     JSMN_ARRAY = 2,
     JSMN_STRING = 3,
+    /* number, bool (true/false) or null */
     JSMN_PRIMITIVE = 4
 } jsmntype_t;
 

@@ -594,7 +594,7 @@ int jsmn_try_parse_double(const char* json, jsmntok_t* token, double* result)
     char *end, *start;
     double d;
 
-    if(token->type != JSMN_STRING)
+    if(token->type != JSMN_PRIMITIVE)
         return 0;
 
     start = (char*)json + token->start;
