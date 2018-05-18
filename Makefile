@@ -2,7 +2,18 @@
 -include config.mk
 
 CFLAGS?=-O3
+ifdef D
+DEBUG=1
+endif
+ifdef DEBUG
+CFLAGS=-O -ggdb3 \
+	-fsanitize=address \
+	-fsanitize=undefined \
+	-D_FORTIFY_SOURCE=2 \
+	-fstack-protector-strong
+endif
 CFLAGS+=-fPIC -Wall
+
 
 all: libjsmn.a 
 

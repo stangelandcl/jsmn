@@ -20,7 +20,12 @@ static jsmntok_t *jsmn_alloc_token(jsmn_parser *parser)
             sz = parser->num_tokens * 2;
             if(!sz)
                 sz = 64;
-            if(!(tok = realloc(parser->tokens, sz)))
+#if 0
+            fprintf(stderr, "%s:%d reallocating tokens to %d from %d need %d\n",
+                    __FILE__, __LINE__,
+                    (int)sz, (int)parser->num_tokens, (int)parser->toknext);
+#endif
+            if(!(tok = realloc(parser->tokens, sz * sizeof(jsmntok_t))))
                 return NULL;
             parser->tokens = tok;
             parser->num_tokens = sz;
@@ -183,6 +188,9 @@ int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
     }
     else if(!parser->tokens)
     {
+#if 0
+        fprintf(stderr, "%s:%d allocating tokens\n", __FILE__, __LINE__);
+#endif
         parser->tokens = malloc(sizeof(jsmntok_t) * 64);
         parser->num_tokens = parser->tokens ? 64 : 0;
         parser->owns_tokens = 1;
@@ -352,7 +360,8 @@ int jsmn_parse_dynamic_str(jsmn_parser *parser, const char *js)
  * Creates a new parser based over a given  buffer with an array of tokens
  * available.
  */
-void jsmn_init(jsmn_parser *parser) {
+void jsmn_init(jsmn_parser *parser)
+{
     parser->tokens = NULL;
     parser->num_tokens = 0;
     parser->owns_tokens = 0;
