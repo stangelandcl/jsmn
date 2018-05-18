@@ -72,5 +72,6 @@ int main() {
                     JSON_STRING + t[i].start);
         }
     }
+    jsmn_destroy(&p);
     return EXIT_SUCCESS;
 }

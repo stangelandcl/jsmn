@@ -59,15 +59,19 @@ typedef struct {
  * the string being parsed now and current position in that string
  */
 typedef struct {
+    jsmntok_t* tokens;
+    unsigned int num_tokens;
     unsigned int pos; /* offset in the JSON string */
     unsigned int toknext; /* next token to allocate */
     int toksuper; /* superior token node, e.g parent object or array */
+    int owns_tokens;
 } jsmn_parser;
 
 /**
  * Create JSON parser over an array of tokens
  */
 void jsmn_init(jsmn_parser *parser);
+void jsmn_destroy(jsmn_parser* parser);
 
 /**
  * Run JSON parser. It parses a JSON data string into and array of tokens, each describing
@@ -75,7 +79,10 @@ void jsmn_init(jsmn_parser *parser);
  */
 int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
         jsmntok_t *tokens, unsigned int num_tokens);
-
+/* dynamically allocate and resize tokens.
+   they will be available on the parser when finished
+   be sure to call jsmn_destroy to free the tokens */
+int jsmn_parse_dynamic(jsmn_parser *parser, const char *js, size_t len);
 int jsmn_parse_text(const char *js, jsmntok_t *tokens, unsigned int num_tokens);
 
 /* assume token is an JSMN_OBJECT. return value for key_name if found

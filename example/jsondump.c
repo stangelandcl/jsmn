@@ -122,5 +122,7 @@ again:
         }
     }
 
+    jsmn_destroy(&p);
+
     return EXIT_SUCCESS;
 }
