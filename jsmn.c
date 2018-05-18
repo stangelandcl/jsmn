@@ -343,6 +343,11 @@ int jsmn_parse_dynamic(jsmn_parser *parser, const char *js, size_t len)
     return jsmn_parse(parser, js, len, NULL, 0);
 }
 
+int jsmn_parse_dynamic_str(jsmn_parser *parser, const char *js)
+{
+    return jsmn_parse_dynamic(parser, js, strlen(js));
+}
+
 /**
  * Creates a new parser based over a given  buffer with an array of tokens
  * available.

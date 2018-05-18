@@ -84,6 +84,7 @@ int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
    they will be available on the parser when finished
    be sure to call jsmn_destroy to free the tokens */
 int jsmn_parse_dynamic(jsmn_parser *parser, const char *js, size_t len);
+int jsmn_parse_dynamic_str(jsmn_parser *parser, const char *js);
 int jsmn_parse_text(const char *js, jsmntok_t *tokens, unsigned int num_tokens);
 
 /* assume token is an JSMN_OBJECT. return value for key_name if found
